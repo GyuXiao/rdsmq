@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/demdxx/gocast"
 	"github.com/gomodule/redigo/redis"
 	"time"
@@ -101,6 +102,28 @@ func (c *Client) XADD(ctx context.Context, topic string, maxLen int, key, value 
 	// 使用完毕后放回连接池
 	defer conn.Close()
 	return redis.String(conn.Do("XADD", topic, "MAXLEN", maxLen, "*", key, value))
+}
+
+func (c *Client) XACK(ctx context.Context, topic, groupID, msgID string) error {
+	if topic == "" || groupID == "" || msgID == "" {
+		return errors.New("redis XACK topic/groupID/msgID can not be empty")
+	}
+	// 从连接池获取连接
+	conn, err := c.pool.GetContext(ctx)
+	if err != nil {
+		return err
+	}
+	// 使用完毕后放回连接池
+	defer conn.Close()
+
+	reply, err := redis.Int64(conn.Do("XACK", topic, groupID, msgID))
+	if err != nil {
+		return err
+	}
+	if reply != 1 {
+		return fmt.Errorf("invalid reply: %d", reply)
+	}
+	return nil
 }
 
 // XReadGroup 消费信息
