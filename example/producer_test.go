@@ -7,12 +7,12 @@ import (
 	"testing"
 )
 
-const (
-	network  = "tcp"
-	address  = "127.0.0.1:6379"
-	password = ""
-	topic    = "my_test_topic"
-)
+//const (
+//	network  = "tcp"
+//	address  = "127.0.0.1:6379"
+//	password = ""
+//	topic    = "my_test_topic"
+//)
 
 func Test_Producer(t *testing.T) {
 	client := redis.NewClient(network, address, password)
