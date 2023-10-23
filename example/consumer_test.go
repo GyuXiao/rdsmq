@@ -60,6 +60,6 @@ func TestConsumer(t *testing.T) {
 	}
 	defer consumer.Stop()
 
-	// 10 秒后退出单测程序
+	// 10 秒后退出单元测试
 	<-time.After(time.Second * 10)
 }

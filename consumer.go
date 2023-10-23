@@ -7,6 +7,8 @@ import (
 	"rdsmq/redis"
 )
 
+// 内置 redis 客户端，通过 XREADGROUP 指令实现消息的消费，通过 XACK 指令实现消息的确认
+
 type Consumer struct {
 	// 生命周期管理
 	ctx context.Context
@@ -162,7 +164,8 @@ func (c *Consumer) run() {
 		tCtx, _ := context.WithTimeout(c.ctx, c.opts.handlerMsgTimeout)
 		c.handlerMsgs(tCtx, msgs)
 
-		// 把失败次数超过阈值的旧消息投递到 deadMsg 队列
+		// 1,如果失败次数超过阈值，则把旧消息投递到 deadMsg 队列
+		// 2,旧消息投递到 deadMsg 队列成功后，执行 xack 操作
 		tCtx, _ = context.WithTimeout(c.ctx, c.opts.deadMsgDeliverTimeout)
 		c.deliverDeadMsg(tCtx)
 

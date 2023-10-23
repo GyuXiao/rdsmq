@@ -2,6 +2,8 @@ package rdsmq
 
 import "time"
 
+// Producer 和 Consumer 的配置参数和参数修正
+
 type ProducerOptions struct {
 	msgQueueLen int
 }
